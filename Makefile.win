@@ -1,0 +1,49 @@
+# Project: B4gl
+# Compiler: Default GCC compiler
+# Compiler Type: MingW 3
+# Makefile created by wxDev-C++ IDE 7.4.2.569 on 11/06/12 03:10
+
+WXLIBNAME = wxmsw29u
+CPP       = g++.exe
+CC        = gcc.exe
+WINDRES   = "windres.exe"
+OBJ       = Objects/MingW/Main.o Objects/MingW/PluginDataStructures.o Objects/MingW/PluginDLL.o Objects/MingW/TomVMDLLAdapter.o
+LINKOBJ   = "Objects/MingW/Main.o" "Objects/MingW/PluginDataStructures.o" "Objects/MingW/PluginDLL.o" "Objects/MingW/TomVMDLLAdapter.o"
+LIBS      = -L"C:/Program Files (x86)/Dev-Cpp/lib/wx/gcc_lib" -L"C:/Program Files (x86)/Dev-Cpp/lib" -L"C:/Program Files (x86)/Dev-Cpp/MinGW32/lib" -lmingw32 -lopengl32 -lglu32 -lgdi32 -lwinmm -lSDLmain -lSDL -lSDL_image -lfreeglut32 -lcorona -ljpeg -lpng -llibz  -g3 
+INCS      = -I"C:/Program Files (x86)/Dev-Cpp/MinGW32/include" -I"C:/basic4gl/LinB4GL/VM" -I"C:/basic4gl/LinB4GL/Compiler" -I"C:/basic4gl/LinB4GL/Routines" -I"C:/basic4gl/LinB4GL/FunctionLibs" -I"C:/basic4gl/LinB4GL/DLLInterface" -I"C:/Program Files (x86)/Dev-Cpp/include/SDL"
+CXXINCS   = -I"C:/Program Files (x86)/Dev-Cpp/MinGW32/include" -I"C:/Program Files (x86)/Dev-Cpp/" -I"C:/Program Files (x86)/Dev-Cpp/include/common" -I"C:/basic4gl/LinB4GL/VM" -I"C:/basic4gl/LinB4GL/Compiler" -I"C:/basic4gl/LinB4GL/Routines" -I"C:/basic4gl/LinB4GL/FunctionLibs" -I"C:/basic4gl/LinB4GL/DLLInterface" -I"C:/Program Files (x86)/Dev-Cpp/include/SDL"
+RCINCS    = --include-dir "C:/PROGRA~2/Dev-Cpp/include/common"
+BIN       = Output/MingW/B4gl.exe
+DEFINES   = -D__WXMSW__ -D__GNUWIN32__ -D_UNICODE
+CXXFLAGS  = $(CXXINCS) $(DEFINES)   -O3 -g3
+CFLAGS    = $(INCS) $(DEFINES)   -O3 -g3
+GPROF     = gprof.exe
+ifeq ($(OS),Windows_NT)
+   RM = del /Q
+   FixPath = $(subst /,\,$1)
+else
+   RM = rm -f
+   FixPath = $1
+endif
+LINK      = g++.exe
+
+.PHONY: all all-before all-after clean clean-custom
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	$(RM) $(call FixPath,$(LINKOBJ)) "$(call FixPath,$(BIN))"
+
+$(BIN): $(OBJ)
+	$(LINK) $(LINKOBJ) -o "$(BIN)" $(LIBS) 
+
+Objects/MingW/Main.o: $(GLOBALDEPS) Main.cpp Compiler/TomComp.h vm/TomVM.h vm/vmVariables.h vm/vmData.h vm/vmTypes.h vm/Misc.h vm/streaming.h vm/vmCode.h vm/vmData.h vm/HasErrorState.h vm/vmFunction.h vm/DebuggerInterfaces.h vm/vmCode.h DLLInterface/PluginDLL.h Compiler/compFunction.h VM/vmTypes.h VM/vmFunction.h Compiler/compConstant.h VM/vmTypes.h VM/vmData.h VM/vmTypes.h DLL\ SDK/include/Basic4GLDLLInterface.h DLL\ SDK/include/DLLMisc.h DLLInterface/PluginDataStructures.h Vm/vmTypes.h Vm/vmData.h DLL\ SDK/Include/Basic4GLDLLInterface.h vm/vmStackFrame.h vm/vmTypes.h vm/vmCodeBlock.h vm/vmStackFrame.h Compiler/compParse.h VM/vmTypes.h VM/HasErrorState.h Compiler/compFunction.h Compiler/compConstant.h DLLInterface/PluginDLL.h FunctionLibs/TomStdBasicLib.h Compiler/TomComp.h FunctionLibs/TomTrigBasicLib.h Compiler/TomComp.h FunctionLibs/TomStdBasicLib.h FunctionLibs/TomFileIOBasicLib.h Compiler/TomComp.h Routines/EmbeddedFiles.h VM/misc.h VM/HasErrorState.h Routines/FilenameRoutines.h FunctionLibs/TomWindowsBasicLib.h Compiler/TomComp.h Routines/EmbeddedFiles.h FunctionLibs/JonWindows.h FunctionLibs/GLBasicLib_gl.h Compiler/TomComp.h VM/TomVM.h FunctionLibs/GLBasicLib_glu.h Compiler/TomComp.h VM/TomVM.h FunctionLibs/DavyFunctionLib.h Compiler/TomComp.h VM/TomVM.h
+	$(CPP) -c Main.cpp -o Objects/MingW/Main.o $(CXXFLAGS)
+
+Objects/MingW/PluginDataStructures.o: $(GLOBALDEPS) DLLInterface/PluginDataStructures.cpp DLLInterface/PluginDataStructures.h Vm/vmTypes.h Vm/Misc.h Vm/streaming.h Vm/vmData.h Vm/vmTypes.h DLL\ SDK/Include/Basic4GLDLLInterface.h DLL\ SDK/Include/DLLMisc.h
+	$(CPP) -c DLLInterface/PluginDataStructures.cpp -o Objects/MingW/PluginDataStructures.o $(CXXFLAGS)
+
+Objects/MingW/PluginDLL.o: $(GLOBALDEPS) DLLInterface/PluginDLL.cpp DLLInterface/PluginDLL.h Compiler/compFunction.h VM/vmTypes.h VM/Misc.h VM/streaming.h VM/vmFunction.h Compiler/compConstant.h VM/vmTypes.h VM/vmData.h VM/vmTypes.h VM/vmTypes.h DLL\ SDK/include/Basic4GLDLLInterface.h DLL\ SDK/include/DLLMisc.h DLLInterface/PluginDataStructures.h Vm/vmTypes.h Vm/vmData.h DLL\ SDK/Include/Basic4GLDLLInterface.h VM/streaming.h
+	$(CPP) -c DLLInterface/PluginDLL.cpp -o Objects/MingW/PluginDLL.o $(CXXFLAGS)
+
+Objects/MingW/TomVMDLLAdapter.o: $(GLOBALDEPS) DLLInterface/TomVMDLLAdapter.cpp DLLInterface/TomVMDLLAdapter.h VM/TomVM.h VM/vmVariables.h VM/vmData.h VM/vmTypes.h VM/Misc.h VM/streaming.h VM/vmCode.h VM/vmData.h VM/HasErrorState.h VM/vmFunction.h VM/DebuggerInterfaces.h VM/vmCode.h DLLInterface/PluginDLL.h Compiler/compFunction.h VM/vmTypes.h VM/vmFunction.h Compiler/compConstant.h VM/vmTypes.h VM/vmData.h VM/vmTypes.h DLL\ SDK/include/Basic4GLDLLInterface.h DLL\ SDK/include/DLLMisc.h DLLInterface/PluginDataStructures.h Vm/vmTypes.h Vm/vmData.h DLL\ SDK/Include/Basic4GLDLLInterface.h VM/vmStackFrame.h VM/vmTypes.h VM/vmCodeBlock.h VM/vmStackFrame.h DLL\ SDK/Include/Basic4GLDLLInterface.h DLLInterface/PluginDataStructures.h
+	$(CPP) -c DLLInterface/TomVMDLLAdapter.cpp -o Objects/MingW/TomVMDLLAdapter.o $(CXXFLAGS)

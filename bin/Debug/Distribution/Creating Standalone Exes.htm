@@ -1,0 +1,364 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>Untitled Normal Page</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font size="5">Basic4GL, Copyright (C) 2004 Tom Mulgrew</font></p>
+
+<p><font size="5">Creating Standalone Exes</font></p>
+
+<p>3-Jun-2006<br>
+Tom Mulgrew</p>
+
+<h1>Basic4GL standalone exes</h1>
+
+<p>Basic4GL can take any Basic4GL program and create an
+executable file.<br>
+This program can run on its own, and does not require Basic4GL to
+be installed.</p>
+
+<p>Basic4GL creates the executable uses a process called
+&quot;binding&quot;. Your program code is combined with the
+Basic4GL compiler and virtual machine into a single exe file.
+When the exe file runs, the Basic4GL compiler compiles your
+program, and then the virtual machine runs it.</p>
+
+<h1>Quick start</h1>
+
+<p>To create a stand-alone executable:</p>
+
+<ul>
+    <li>Start Basic4GL</li>
+    <li>Open your Basic4GL program (Program|Open...)</li>
+    <li>Ensure it compiles and runs properly</li>
+    <li>Click &quot;Program&quot; on the main menu then
+        &quot;Create Standalone .exe...&quot;</li>
+</ul>
+
+<p>The create standalone exe options dialog box will appear. You
+can now configure how your exe will be created.<br>
+It is recommended you at least set the filename, so you can
+choose a directory where you will be able to find the file once
+it's created (otherwise by default the file will be created in
+the same directory as the original Basic4GL source file.).</p>
+
+<p>When you are ready, click &quot;Create Program&quot; to
+generate your exe file.</p>
+
+<p>This will create a single .exe file. To run the file, navigate
+to it on your hard drive and double click it. <em>Note: If the
+program requires other files be present e.g. images, data files
+e.t.c, it may not run correctly if it cannot find them. See the
+&quot;Embedded files&quot; section below for a method of
+including images and other files directly into your .exe file, so
+that you do not have to distribute them separately.</em></p>
+
+<h1>Create standalone exe options</h1>
+
+<p>There are several ways you can configure how the program will
+work, and how and where it will be created. These are divided
+into several tabbed pages in the &quot;Create standalone
+exe&quot; dialog box.</p>
+
+<h2>&quot;Program&quot; tab</h2>
+
+<p>This allows you to specify the output filename, and the window
+title.<br>
+By default the name of the Basic4GL program is used (i.e.
+&quot;MyGame.gb&quot; will create a file &quot;MyGame.exe&quot;,
+with a window title &quot;MyGame&quot;). If the Basic4GL program
+hasn't been saved to disk yet, it will default to
+&quot;MyProgram.exe&quot; (filename) and &quot;MyProgram&quot;
+(display name).<br>
+The display name is also shown when you Alt-Tab between
+applications.</p>
+
+<h2>&quot;Options&quot; tab</h2>
+
+<p>This allows you to specify what will happen when the program
+encounters a runtime error, or reaches the end of the program (or
+an &quot;end&quot; command). There are two options:</p>
+
+<h3>When the program finishes it should</h3>
+
+<p>Some programs keep on executing until the user quits (presses
+Escape or closes the window). <br>
+Others will perform an action, display the results and then
+finish.</p>
+
+<p>Here you can specify whether it is appropriate to close the
+program down immediately, or wait for a keypress (to give the
+user time to look at the results on the screen) before closing.
+You can also choose to keep the window open until the user closes
+it by clicking on the close button. (This option does not apply
+when in full screen mode.)</p>
+
+<h3>If a runtime error occurs the program should</h3>
+
+<p>Typical runtime errors include:</p>
+
+<ul>
+    <li>Reading off the end of an array</li>
+    <li>Trying to access a null pointer</li>
+    <li>Trying to access a variable that hasn't been DIMmed yet</li>
+</ul>
+
+<p>If an error like this occurs the Basic4GL program cannot
+continue, and must stop. In Basic4GL it would position the cursor
+where the problem is and give a description of what went wrong.
+But in a standalone application you cannot do this (and probably
+wouldn't want to).<br>
+So here you can specify what to do instead, either display a full
+error description with line number and column, or display a
+general error message (&quot;An error has occured&quot;), or just
+close the application.</p>
+
+<h3>&quot;Esc&quot; or Closing Window quits</h3>
+
+<p>This checkbox determines whether the program will close
+immediately when someone presses the Escape key, or closes the
+program window (in windowed mode).<br>
+By default (tick box is ticked) Basic4GL halts the program,
+cleans up any resources used (e.g. textures or file handles) and
+closes the program.</p>
+
+<p>Sometimes you may not want Basic4GL to quit immediately.<br>
+Usually this is when you want to perform some clean-up before the
+user exits, for example, saving the player's position in a game,
+or saving the user's configuration settings to a file, or just
+asking &quot;are you sure?&quot;.<br>
+In this case you can clear the tickbox and the program will <em>not
+</em>close automatically.<br>
+<em>You must add code to your program to allow the player to
+quit!</em> Otherwise they will have to kill the program with task
+manager which isn't very friendly.<br>
+The program will quit when either:</p>
+
+<ul>
+    <li>The program reaches the end, or</li>
+    <li>An &quot;end&quot; instruction is encountered.</li>
+</ul>
+
+<p>Example 1:</p>
+
+<blockquote>
+    <pre>printr &quot;Press Q to quit&quot;
+while lcase$ (inkey$ ()) &lt;&gt; &quot;q&quot;
+
+    ' Do something
+    ' ...
+                  
+wend
+
+' Cleanup 
+' ...
+
+printr &quot;Goodbye&quot;</pre>
+</blockquote>
+
+<p>Example 2:</p>
+
+<blockquote>
+    <pre>printr &quot;Press Q to quit&quot;
+while true
+    
+    ' Do something
+    ' ...
+    
+    if lcase$ (inkey$ ()) = &quot;q&quot; then
+
+        ' Cleanup 
+        ' ...
+
+        printr &quot;Goodbye&quot;        
+        end
+    endif
+wend</pre>
+</blockquote>
+
+<p>Basic4GL will simulate a VK_ESCAPE keypress if the user clicks
+the close button on the window (in windowed mode).<br>
+You can detect this as follows:</p>
+
+<blockquote>
+    <pre>if InScanKey () = VK_ESCAPE then
+    
+    ' User wants to quit
+    ' ...
+
+endif</pre>
+</blockquote>
+
+<h2>&quot;Screen Mode&quot; tab</h2>
+
+<p>Here you can choose the screen mode that the program will run
+in.<br>
+Currently there is no option for letting the user choose. This
+may change in a later version of Basic4GL.</p>
+
+<h2>&quot;Embedded Files&quot; tab</h2>
+
+<p>Many programs require extra files in order to run properly,
+such as textures and data files. If the program cannot find them,
+it won't run correctly and may not run at all.<br>
+Normally this means you have to distribute all these files
+separately, either in a compressed archive (like a zip file) or
+using some sort of installer.</p>
+
+<p>Basic4GL has an &quot;Embedded Files&quot; mechanism which can
+simplify this by storing the support files directly into the
+executable file itself. These files load automatically whenever
+the program loads in a file with the same filename, for example
+using LoadTexture, LoadSound or OpenFileRead, so you don't need
+to change your program to make it work.<br>
+If the file isn't found inside the executable, the program will
+attempt to load it from disk as per normal.</p>
+
+<p>By embedding all your textures, sound files and other support
+files you can boil your program down to a single exe file that
+can be distributed by itself.</p>
+
+<h3>Default embedded files</h3>
+
+<p>You will often find that Basic4GL has already made a guess at
+the files that the program uses (it does this by scanning through
+the program for strings that match up to filenames on your
+drive). In this case the files will already be entered into the
+embedded files list.<br>
+For example, if you create a standalone exe from
+&quot;AsteroidDemo2.gb&quot; from the Programs folder you will
+see that it has guessed all the files that the program requires.)<br>
+There are some situations where Basic4GL cannot guess all the
+files that the program will access.<br>
+For example:</p>
+
+<blockquote>
+    <pre>dim path$, filename$, tex
+path$ = &quot;textures&quot;
+filename$ = &quot;00001.jpg&quot;
+tex = LoadTexture (path$ + &quot;\&quot; + filename$)</pre>
+</blockquote>
+
+<p>Will load a texture called &quot;textures\00001.jpg&quot;.
+Basic4GL will not detect this however (as it sees
+&quot;textures&quot; and &quot;00001.jpg&quot; separately.) If
+you didn't want to distribute the &quot;textures\00001.jpg&quot;
+file along with the standalone exe, you would need to add it
+manually to the embedded files list.</p>
+
+<h3>Adding embedded files</h3>
+
+<p>Simply click the &quot;Add...&quot; button, browse to the
+files you want to include, select them and click
+&quot;Open&quot;. Do this as many times as necessary.<br>
+<em>Note: Simply adding a file doesn't mean that the program will
+use it. You still have to write the Basic4GL code to load and use
+the file. Otherwise it will simply sit in the exe and waste
+space!</em></p>
+
+<h3>Deleting embedded files</h3>
+
+<p>Sometimes you don't want to use the embedded files mechanism.<br>
+For example, you may want to distribute an image separately so
+that the user can edit it and customise their game.<br>
+Also embedded files are loaded into memory as soon as the program
+starts (even if they aren't used), and will use this memory until
+the program exits. If you have a large number of data files you
+may want to load them in as they are required and then free them
+up once you are finished with them. In this case distributing the
+files separately might be a better idea.</p>
+
+<p>To remove files from the embedded files list, simply select
+them and click &quot;Remove&quot;.</p>
+
+<h2>&quot;UPX compression&quot; tab</h2>
+
+<p><strong>Note: UPX (the &quot;Ultimate Packer for
+eXecutables&quot;) is in no way associated with Basic4GL or it's
+authors.</strong></p>
+
+<p>UPX is a very useful utility that compresses executable files
+(as well as DLLs and other executable formats). Using UPX, you
+can compress a Basic4GL standalone exe from 1.1 megabytes down to
+a much more managable and distributable 350K.</p>
+
+<p>To make it even easier, you can configure Basic4GL to invoke
+UPX for you immediately after it creates your standalone exe. UPX
+is not installed with Basic4GL so you will first have to go to
+the <a href="http://upx.sourceforge.net">UPX homepage</a> and
+download and unzip it yourself.<br>
+Once that's done, you will need to tell Basic4GL where it is on
+your hard drive. Ensure the &quot;Compress program with UPX&quot;
+tickbox is ticked, then click the browse button and select the
+UPX.exe file on your hard drive.<br>
+Basic4GL will now use UPX to compress the executable once
+created.</p>
+
+<h1>About the exe file</h1>
+
+<p>You should be aware that:</p>
+
+<ol>
+    <li>If your program plays sounds or music, you must
+        distribute B4GLSound.dll and the OpenAL installer
+        OpenALwEAX.exe. Both can be found in the Basic4GL program
+        folder. See the &quot;Sound&quot; section in the
+        Programmers' Guide for more information.<br>
+        </li>
+    <li>If your program does NOT play sound or music, there are
+        no extra DLLs or files to distribute (besides any files
+        that your program might load that aren't embedded into
+        the executable).<br>
+        </li>
+    <li>The program should run on any Windows PC with a proper
+        OpenGL implementation. I.e any PC that can run Basic4GL
+        should be able to run your standalone exe.<br>
+        </li>
+    <li>The default font texture is automatically included into
+        the executable.<br>
+        </li>
+    <li><strong>Standalone executable files will not run any
+        faster than programs running in Basic4GL!</strong><br>
+        This is because Basic4GL does not compile your programs
+        to true machine code. <br>
+        The file that it creates contains the Basic4GL virtual
+        machine and a copy of your Basic4GL program compiled into
+        virtual machine op-codes. When you double click the
+        executable, it runs the program in the virtual machine in
+        exactly the same way as the Basic4GL application does.<br>
+        </li>
+    <li>Standalone executables are relatively large.<br>
+        A hello world program (print &quot;Hello world&quot;)
+        will generate a 2 meg executable (less if you compress it
+        with UPX).<br>
+        This is because it contains the virtual machine and all
+        libraries (the image loading library by itself compiles
+        to about 600K). Even if they aren't used, they are there.</li>
+</ol>
+
+<h1>Licensing issues</h1>
+
+<p>So long as you wrote the original Basic4GL program, you are
+free to distribute any standalone files that you generate from it
+as you see fit, even sell them. However there are some
+restrictions (e.g. to protect the Basic4GL part from being
+extracted and sold for example).</p>
+
+<p>Refer to the &quot;Standalone Executables&quot; section of the
+Basic4GL License (License.txt), for more information.</p>
+
+<p>Parts of your executable contain code from third parties. This
+includes the Corona library (distributed under the zlib license),
+OpenAL (distributed under the Lesser GPL license) and the Ogg
+Vorbis routines from Xiph.Org (distributed under the BSD
+license). </p>
+
+<p>&nbsp;</p>
+</body>
+</html>

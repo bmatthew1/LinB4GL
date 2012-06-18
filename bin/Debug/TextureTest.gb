@@ -1,0 +1,9 @@
+dim tex = loadtex("fb01.png")
+
+if tex = 2 then
+    printr "texture loaded" 
+    tickcount()
+    sleep(1000)
+else
+    printr "texture not loaded"
+endif

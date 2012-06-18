@@ -1,0 +1,294 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>Symbolic Debugger Guide</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font size="5">Basic4GL, Copyright (C) 2003 Tom Mulgrew</font></p>
+
+<p><font size="5">Symbolic Debugger Guide</font></p>
+
+<p>13-Dec-2003<br>
+Tom Mulgrew</p>
+
+<h1>What is a symbolic debugger?</h1>
+
+<p>A debugger is a tool that helps you track down and eliminate
+errors (or &quot;bugs&quot;) in program code. Typically you use a
+debugger to pause the program at a point which you wish to
+investigate, then analyse the contents of variables at that
+point. You can also trace through the flow of the program to see
+exactly which code is executed and the effect it has on the data.</p>
+
+<h1>The Basic4GL debugger</h1>
+
+<p>The Basic4GL debugger is integrated directly into Basic4GL
+itself. It supports the following features:</p>
+
+<ul>
+    <li>Stepping</li>
+    <li>Breakpoints</li>
+    <li>Watches (including mouse-over hints)</li>
+    <li>Stack display</li>
+</ul>
+
+<h1>Activating the debugger</h1>
+
+<p>When Basic4GL starts the debugger displays and buttons are
+hidden (although most of them can still be used if you know the
+keyboard shortcuts).<br>
+To switch between debug mode and normal mode, click the
+&quot;Basic4GL&quot; menu on the main menu bar then &quot;Debug
+Mode&quot;, OR press the corresponding button on the toolbar OR
+press Ctrl+D.<br>
+Basic4GL will now display the &quot;watch&quot; and
+&quot;stack&quot; windows along the bottom, and add the
+&quot;stepping&quot; buttons to the toolbar.</p>
+
+<h1>Stopped, running and paused</h1>
+
+<p>To correctly understand and use the Basic4GL debugger you will
+need to become familiar with these three modes:<br>
+(it's actually simpler than it sounds!)</p>
+
+<ul>
+    <li>Stopped<br>
+        This means that the program has stopped completely. <br>
+        The editor is enabled. <br>
+        The debugging tools show the state of the program when it
+        finished/was stopped.<br>
+        When the program is next run, it will be run from the
+        start.<br>
+        </li>
+    <li>Running<br>
+        This means the Basic4GL program is running.<br>
+        You cannot edit the program code.<br>
+        If Basic4GL is in fullscreen mode, then the screen is
+        displaying the program's output.<br>
+        </li>
+    <li>Paused<br>
+        This is the mode that the stepping and breakpoint tools
+        will put Basic4GL into. The program has been paused
+        midway through running, and the debugging tools show the
+        state of the program at that time.<br>
+        Unlike &quot;stopped&quot; mode, the program code cannot
+        be edited, and when the program is run again, it will
+        continue on from the point at which it was paused.</li>
+</ul>
+
+<p>So if you wish to edit the program, you will need to ensure it
+is &quot;stopped&quot;, not just &quot;paused&quot; (press the
+&quot;Stop&quot; button on the toolbar).</p>
+
+<p>To debug a section of code, you will need to &quot;pause&quot;
+Basic4GL at that point (either using a breakpoint, or by stepping
+to it, or pressing the &quot;pause&quot; button).</p>
+
+<h3>Go/Stop vs Play/Pause</h3>
+
+<p>The Go/Stop button (displays a &quot;Go&quot; or
+&quot;Stop&quot; sign depending on the mode) is used to run the
+program <em>from the start</em>, or stop it completely so that it
+can be edited.</p>
+
+<p>The Play/Pause debugging button (displays a play arrow or a
+pause sign) is used to pause the program or resume it <em>from
+the position it was paused</em>.</p>
+
+<h1>Stepping</h1>
+
+<p>Basic4GL supports these standard functions for stepping
+through code:</p>
+
+<ul>
+    <li>Step over</li>
+    <li>Step into (gosub)</li>
+    <li>Step out of (gosub)</li>
+</ul>
+
+<p>They behave like any other debugger, that is:</p>
+
+<h3>Step over</h3>
+
+<p>&quot;Step over&quot; runs the current line of code and pauses
+on the next line. If the current line contains a
+&quot;gosub&quot; call, it will <em>not</em> step into it.
+Instead it will run the entire gosub routine and return.</p>
+
+<p>For example, for the following program:</p>
+
+<blockquote>
+    <pre>dim a, b: a = 10: b = 20        ' 1
+gosub Two                       ' 2
+printr a                        ' 3
+end                             ' 4
+Two:                            ' 5
+    printr b                    ' 6
+    return                      ' 7</pre>
+</blockquote>
+
+<p>Clicking &quot;Step over&quot; once will pause the program on
+line 2. Clicking it again will pause the program on line 3,
+despite the fact that lines 6 and 7 were also executed by the
+&quot;gosub&quot; call (and 20 was printed on the screen).</p>
+
+<h3>Step into</h3>
+
+<p>&quot;Step into&quot; behaves exactly like step over, except
+when the current line contains a &quot;gosub&quot; call.<br>
+In this case the program is paused on the first line of the
+&quot;gosub&quot; routine.</p>
+
+<p>For example, for the previous program, clicking &quot;Step
+Into&quot; once will pause the program on line 2. Clicking it
+again will pause the program on line 6. (Then line 7, then line
+3.)</p>
+
+<h3>Step out of</h3>
+
+<p>&quot;Step out of&quot; is only available if the program has
+been paused inside a gosub call. &quot;Step out of&quot; will run
+the rest of the &quot;gosub&quot; routine and pause the program
+on the instruction immediately after the actual &quot;gosub&quot;
+call.</p>
+
+<p>So on the above program, clicking &quot;Step into&quot; twice
+to get to line 6 will make the &quot;Step out of&quot; function
+available. Clicking &quot;Step out of&quot; will then pause the
+program on line 3, i.e. the instruction immediately after the
+&quot;gosub&quot; on line 2.</p>
+
+<h1>Breakpoints</h1>
+
+<p>A &quot;breakpoint&quot; is used to pause a program at a
+particular line of code. You place the breakpoint on the line (or
+lines) where you wish to pause the program, and then run it. The
+program will continue running until it reaches the line (or
+lines) of code. When it does so, it will pause at the start of
+the line, before executing any of the code on it.</p>
+
+<p>To place a breakpoint, click on the gray area on the left side
+of the editor, next to the line where you wish to pause the
+program. Basic4GL indicates breakpoints with a small stop sign.
+To remove the breakpoint, simply click it again.</p>
+
+<p>You can add a breakpoint at any time, even if the program is
+running (except in fullscreen mode obviously). The breakpoint
+becomes active from the moment you click it in. <br>
+Breakpoints will only work on lines that correspond to executable
+code. If you place a breakpoint on a line with no corresponding
+code, it will be dithered out to indicate that it is inactive.</p>
+
+<h1>Watches</h1>
+
+<p>Watches display the value of a variable. Watches are only
+active when the program is stopped or paused, and are displayed
+in the wide window immediately under the editor (when debug mode
+is on).</p>
+
+<p>To add a watch, double click the blank line at the top of the
+watches list and type in the variable or expression you wish to
+watch. Alternatively you can right click a variable in the editor
+and choose &quot;Add watch&quot;.<br>
+Basic4GL will now display the variable/expression, along with
+it's value, so you can track changes to it (e.g. as you step
+through lines of code).</p>
+
+<h3><font color="#000000">Side effects</font></h3>
+
+<p><font color="#000000">You can watch any valid Basic4GL
+expression, including arithmetic expressions and functions.<br>
+Beware of functions that have side effects. For example, placing
+a watch on &quot;ReadInt (file)&quot; (read an integer from file
+with handle &quot;file&quot;) will advance the current position
+in the file each time the watch is evaluated, and most likely
+cause the code that you are debugging to fail.<br>
+(And don't place a watch on </font>&quot;Input$ ()&quot;, as it
+will crash Basic4GL! This will be fixed...)</p>
+
+<h3>Mouse-over hints</h3>
+
+<p>You can also quickly see the value of a variable by moving the
+mouse over it in the editor. To quickly see the result of an
+expression, highlight it first, then move the mouse over it.<br>
+Mouse-over hints will <em>not</em> evaluate functions (otherwise
+we could get unexpected side effects from accidently moving the
+mouse over a function). You must use a watch for this instead.</p>
+
+<h1>Stack display</h1>
+
+<p>The &quot;stack display&quot; lists all the active
+&quot;gosub&quot; calls. This is somewhat simpler than most
+debuggers, as Basic4GL &quot;gosubs&quot; don't have parameters
+or other information passed in.</p>
+
+<p>The stack display is the small window at the bottom right
+(when debug mode is active). It is only active in
+&quot;paused&quot; mode.</p>
+
+<p>The top most entry is always &quot;IP&quot;, which corresponds
+to the current instruction pointer. Double clicking this will
+move the cursor to the current line being executed.<br>
+The remaining lines are &quot;gosub&quot; calls. Double click
+each to move to display the line of source code containing the
+call.</p>
+
+<h1>Keyboard shortcuts</h1>
+
+<p>The debugging keyboard shortcuts are based on both the Borland
+and Microsoft standards.</p>
+
+<table border="1">
+    <tr>
+        <td><strong><u>Function</u></strong></td>
+        <td><strong><u>Shortcut (Borland)</u></strong></td>
+        <td><strong><u>Shortcut (Microsoft)</u></strong></td>
+    </tr>
+    <tr>
+        <td>Step over</td>
+        <td>F8</td>
+        <td>F10</td>
+    </tr>
+    <tr>
+        <td>Step into</td>
+        <td>F7</td>
+        <td>F11</td>
+    </tr>
+    <tr>
+        <td>Step out of</td>
+        <td>Shift + F8</td>
+        <td>Shift + F10</td>
+    </tr>
+    <tr>
+        <td>Run/Pause</td>
+        <td>F9</td>
+        <td>F5</td>
+    </tr>
+    <tr>
+        <td>Add watch</td>
+        <td>Ctrl + F5</td>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+
+<p>Be aware that F9 in Microsoft debugging environments means
+&quot;set breakpoint&quot;, which is F5 in Borland debugging
+environments! (Basic4GL doesn't have a set breakpoint keyboard
+shortcut.)</p>
+
+<h1>Keyboard shortcuts in the program output window</h1>
+
+<p>The following keys can be pressed in the output window, while
+the program is running. (This is especially useful in full-screen
+mode, as the editor keys are unavailable.)</p>
+
+<p><strong>Esc </strong>stops the program completely.</p>
+
+<p><strong>Pause</strong> pauses the program.</p>
+</body>
+</html>

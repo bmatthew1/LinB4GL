@@ -1,0 +1,159 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>Basic4GL,</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<p><font size="5">Basic4GL, Copyright (C) 2006 Tom Mulgrew</font></p>
+
+<p><font size="5">Plugin DLLs</font></p>
+
+<p>13-Aug-2006<br>
+Tom Mulgrew</p>
+
+<h1>What are plugin DLLs?</h1>
+
+<p>Plugin DLLs are dll files written especially for Basic4GL.
+When you &quot;plug-in&quot; a DLL, it extends the Basic4GL
+language, giving you new commands that you can use in your
+programs. For example, a plugin DLL might give you new commands
+to play midi files, access the CD drive, load and render 3D
+models, call OpenGL commands from later versions or print to a
+printer.</p>
+
+<p>Plugin DLLs allow programmers to extend Basic4GL without
+having to alter the main Basic4GL source code. Anyone with a
+reasonable grasp of C/C++ can create a Basic4GL plugin and
+distribute it to other Basic4GL users.</p>
+
+<h1>Where can I find them?</h1>
+
+<p>Check the <a href="http://www.basic4gl.net">Basic4GL homepage</a>
+and the <a href="http://basic4gl.wikispaces.com/">Basic4GL wiki
+page</a>. Note that at the time of writing, plugin DLLs are
+relatively new, so there are no dedicated areas for them. These
+will be created soon.</p>
+
+<p>People often announce their DLLs in the <a
+href="http://basic4gl.proboards20.com/">Basic4GL discussion forum</a>,
+so check there also.</p>
+
+<h1>How do I use them in my Basic4GL programs?</h1>
+
+<p>Like so:</p>
+
+<ol>
+    <li>Download the plugin DLL file.</li>
+    <li>Move/copy it to your Basic4GL program folder (by default
+        this is C:\Program files\Basic4GL).</li>
+    <li>Start Basic4GL, click &quot;Program&quot; (on the main
+        menu) then &quot;Plug-in Libraries...&quot;</li>
+    <li>The &quot;Plugin chooser&quot; window pops up. Find the
+        plugin DLL file and click the tickbox.</li>
+</ol>
+
+<p>If all goes well, the plugin will be installed into Basic4GL.
+You can now close the plugin chooser and use the new commands in
+your program.</p>
+
+<p>If not, refer to this trouble-shooter:</p>
+
+<ul>
+    <li>The plugin DLL file does not appear in the &quot;Plugin
+        chooser&quot;.<br>
+        This can happen if the DLL file is not a Basic4GL plugin
+        dll. Plugin DLLs must be especially written for Basic4GL.
+        DLLs for other programs will not work.<br>
+        Also, the version of the plugin DLL may not be compatible
+        with the version of Basic4GL. Be sure you have the most
+        recent version of both the plugin, and Basic4GL.<br>
+        </li>
+    <li>A message box pops up when you tick the DLL in the
+        &quot;Plugin chooser&quot;.<br>
+        This is the plugin DLL telling you the reason why it
+        could not load. Some plugin DLLs require other plugin
+        DLLs to be loaded beforehand. If the plugin DLL author is
+        user friendly, then the message should hopefully give you
+        an idea of what the problem is, and how to fix it.<br>
+        Otherwise you may need to contact the author of the DLL
+        for any further trouble-shooting.</li>
+</ul>
+
+<p>Note: Plugin DLLs stay loaded for the duration of your
+Basic4GL session, or until you create or load a new program.
+Every time you create a new program, you will need to choose
+which plugins you wish to use for that program. When you save
+your program to disk, Basic4GL automatically remembers which
+plugins are used, and will automatically load them the next time
+your program is opened.</p>
+
+<h1>How do I know what the new commands are?</h1>
+
+<p>After you've placed the tick next to a plugin DLL, hover the
+mouse over the name of the DLL. A mouse hint window should appear
+listing the new commands.<br>
+This is just a rough guide however, as it doesn't tell you
+exactly how the commands are used or what they do. Ideally the
+DLL author will include instructions along with his/her DLL
+describing how it is used.</p>
+
+<h1>Standalone exes</h1>
+
+<p>If you create a standalone exe of a Basic4GL program that uses
+plugin DLLs, then you must distribute those DLLs with your
+standalone exe. </p>
+
+<h1>Are plugin DLLs safe?</h1>
+
+<p>Basic4GL plugin DLLs can be potentially unsafe.</p>
+
+<p>Basic4GL is designed to be a safe language, and every attempt
+is made to ensure it is stable, and that a malicious Basic4GL
+program (whether written deliberately or accidentally) will not
+damage your system.</p>
+
+<p>However, plugin DLLs are written in C/C++ and can interact
+directly with your system. Basic4GL cannot restrict what a plugin
+DLL does. If a plugin allows overwriting files in your system
+directory, then someone could use it to write a Basic4GL program
+that does exactly that.<br>
+You should also be aware that even if a plugin was written with
+the best intentions, it can still contain bugs that can make it,
+and therefore Basic4GL, unstable.</p>
+
+<p>Therefore using a plugin DLL is an exercise in trust and
+common sense should be used.<br>
+If you know and trust the authors intentions (and programming
+ability) and/or if a large number of people use a DLL (and aren't
+complaining about it) then you can generally expect it to be
+safe.</p>
+
+<p>Note: All plugin DLLs downloadable from the Basic4GL homepage
+are believed to be safe (by me, the author of Basic4GL).</p>
+
+<h1>How can I create my own plugin DLLs?</h1>
+
+<p>To create a DLL, you will need:</p>
+
+<ol>
+    <li>To be reasonably confident at writing C++ code.</li>
+    <li>A C++ compiler. I can recommend <a
+        href="http://www.codeblocks.org/">Codeblocks</a> which is
+        free.<br>
+        The Basic4GL plugin SDK contains projects for Codeblocks
+        and the Microsoft Visual C++ 2005 compiler.<br>
+        Any other decent Windows C++ compiler should also work,
+        but you will need to create and configure the project
+        yourself.</li>
+    <li>The Basic4GL plugin SDK. Downloadable from the <a
+        href="http://www.basic4gl.net">Basic4GL homepage</a>.</li>
+</ol>
+
+<p>Further instructions are provided in the plugin SDK.</p>
+</body>
+</html>

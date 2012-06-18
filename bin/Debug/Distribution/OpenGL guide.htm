@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><TITLE>Basic4GL - OpenGL Guide</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+<META content="MSHTML 6.00.6000.16705" name=GENERATOR></HEAD>
+<BODY bgColor=#ffffff>
+<P><FONT size=5>Basic4GL, Copyright (C) 2003 Tom Mulgrew</FONT></P>
+<P><FONT size=5>OpenGL guide</FONT></P>
+<P>26-Jul-2008<BR>Tom Mulgrew</P>
+<H1>This document</H1>
+<P>This document will not teach you OpenGL!<BR>Instead it is designed to give 
+you the information you need to use OpenGL tutorials and example programs from 
+other sources in Basic4GL.</P>
+<P>One such source is Neon Helium Productions OpenGL tutorials <A 
+href="http://nehe.gamedev.net">http://nehe.gamedev.net</A>.<BR>Basic4GL 
+conversions of tutorials 2 - 11 are available from the "Programs" directory 
+(named nehe2, nehe3, e.t.c).</P>
+<P>The next important resource is an OpenGL function reference.<BR>You can find 
+one for the Microsoft Windows OpenGL implementation at <A 
+href="http://msdn.microsoft.com/library/default.asp">http://msdn.microsoft.com/library/default.asp</A> 
+(Click and expand "Graphics and Multimedia" in the left panel, and then 
+"OpenGL". Expand "OpenGL", "OpenGL Reference" then "GL Functions" for a list of 
+functions.)</P>
+<H1>OpenGL support</H1>
+<P>Basic4GL supports version OpenGLv1.1, and supports all functions of the Win32 
+OpenGL implementation, <EM>except</EM> for:</P>
+<UL>
+  <LI>glBitmap 
+  <LI>glDrawElements 
+  <LI>glDrawPixels 
+  <LI>glEdgeFlagPointer 
+  <LI>glGetMap- (range) 
+  <LI>glGetPixelMap- (range) 
+  <LI>glGetTexImage 
+  <LI>glIndexPointer 
+  <LI>glInterleavedArrays 
+  <LI>glMap- (range) 
+  <LI>glNormalPointer 
+  <LI>glPixelMap- (range) 
+  <LI>glReadPixels 
+  <LI>glTexCoordPointer 
+  <LI>glTexImage1d 
+  <LI>glTexSubImage1d 
+  <LI>glVertexPointer </LI></UL>
+<P>Basic4GL also supports the following functions from the GL_ARB_multitexture 
+extension:</P>
+<UL>
+  <LI>glMultiTexCoord2f 
+  <LI>glMultiTexCoord2d 
+  <LI>glActiveTexture </LI></UL>
+<P>The following glu funtions are supported:</P>
+<UL>
+  <LI>gluOrtho2d 
+  <LI>gluPerspective 
+  <LI>gluLookat </LI></UL>
+<H1>Basic4GL OpenGL implementation</H1>
+<H2>Basic4GL OpenGL initialisation.</H2>
+<P>Firstly, Basic4GL creates a window for you and initialises it for 
+OpenGL.<BR>Therefore Basic4GL programs skip the initialisation stage and can 
+start executing OpenGL commands straight away.<BR>Example:</P>
+<BLOCKQUOTE>
+  <P>glTranslatef (0, 0, -4)<BR>glBegin (GL_TRIANGLES)<BR>glColor3f (1, 0, 0): 
+  glVertex2f ( 0, 1)<BR>glColor3f (0, 1, 0): glVertex2f (-1,-1)<BR>glColor3f (0, 
+  0, 1): glVertex2f ( 1,-1)<BR>glEnd ()<BR>SwapBuffers ()</P></BLOCKQUOTE>
+<P>Basic4GL also performs the following OpenGL calls at the beginning of each 
+program:</P>
+<BLOCKQUOTE>
+  <P><EM>Initialise the view port<BR></EM>glViewport (0, 0, WindowWidth(), 
+  WindowHeight())</P>
+  <P><EM>Create projection matrix, 60 degree field of view, near clip plane at 
+  1, far clip plane at 1000<BR></EM>glMatrixMode 
+  (GL_PROJECTION)<BR>glLoadIdentity ()<BR>gluPerspective (60, 
+  (1.0*WindowWidth()) / WindowHeight(), 1, 1000)</P>
+  <P><EM>Initialise the model view 
+  matrix<BR></EM>glMatrixMode(GL_MODELVIEW)<BR>glLoadIdentity()</P>
+  <P><EM>Enable depth testing<BR></EM>glEnable (GL_DEPTH_TEST)<BR>glDepthFunc 
+  (GL_LEQUAL)</P></BLOCKQUOTE>
+<P>This is simply for convenience and saves typing - if you're happy with the 
+default settings.<BR>Otherwise feel free to roll your own projection matrix 
+e.t.c.<BR>The WindowWidth() and WindowHeight() functions will return the width 
+and height of the output window. (Multiplying the WindowWidth() by 1.0 simply 
+converts it to a real value instead of an integer, so that real division is used 
+instead of integer).</P>
+<H2>Double buffered OpenGL window.</H2>
+<P>The OpenGL window is <EM>double buffered</EM>.</P>
+<P>This means it has a <EM>back buffer</EM>, which is hidden away from the user, 
+and a <EM>front buffer</EM> which corresponds to the visible image on the 
+screen.</P>
+<P>All OpenGL rendering occurs in the back buffer. Once the scene is complete 
+and ready to be displayed it is "swapped" to the front buffer, which displays it 
+on the screen.<BR>In Basic4GL you do this with the SwapBuffers() command.</P>
+<H3>SwapBuffers</H3>
+<P>SwapBuffers() will swap the completed scene from the back buffer. This 
+immediately displays the result of the image that has just been rendered.</P>
+<P>SwapBuffers() is a crucial part of any Basic4GL OpenGL program. Without it 
+the user won't see anything rendered, because it will all be sitting in the back 
+buffer, which is not displayed.</P>
+<P>A simple example:</P>
+<BLOCKQUOTE>
+  <P>while true<BR>glClearColor (rnd()%100/100.0, rnd()%100/100.0, 
+  rnd()%100/100.0, rnd()%100/100.0)<BR>glClear 
+  (GL_COLOR_BUFFER_BIT)<BR>SwapBuffers ()<BR>wend</P></BLOCKQUOTE>
+<P>Will repeatedly clear the OpenGL window to a random colour, and display it. 
+The visual result is random flickering colours.<BR>Without the SwapBuffers() 
+call, the above program would not appear to do anything, as nothing ever gets 
+through to the front buffer.</P>
+<P><EM>Note: SwapBuffers() will either </EM>copy<EM> the back buffer to the 
+front buffer, or </EM>exchange<EM> the buffers. This appears to depend on the 
+hardware, screen mode and OpenGL implementation. For example, my on NVidia 
+GeForce2, SwapBuffers appears to </EM>exchange<EM> in fullscreen mode and 
+</EM>copy<EM> in windowed mode.</EM></P>
+<H2>Image and texture loading</H2>
+<P>Basic4GL uses the Corona open-source image library to load image files, for 
+use in OpenGL textures. Through Corona Basic4GL supports Windows Bitmap files, 
+Jpeg files and a host of other formats.</P>
+<P>The Corona library is distributed under the&nbsp;zlib license&nbsp;(See ZLib 
+LibPNG license.txt), and is freely available from <A 
+href="http://corona.sourceforge.net/" 
+target="">http://corona.sourceforge.net/</A>.</P>
+<H3>LoadTex</H3>
+<P>The easiest way to get a texture into Basic4GL is to use the LoadTex() 
+functions.<BR>Format:</P>
+<BLOCKQUOTE dir=ltr style="MARGIN-RIGHT: 0px">
+  <P>LoadTex(<EM>filename</EM>) </P></BLOCKQUOTE>
+<P>Where&nbsp;<EM>filename</EM> is a string containing the filename of an image 
+to load into an OpenGL texture.</P>
+<P>This will allocate an OpenGL texture, load the image into the texture, and 
+return the OpenGL texture handle (a numeric handle known as the "texture 
+name").<BR>The function returns 0, if for any reason&nbsp;it cannot load the 
+image and store it in a texture.</P>
+<P>See the Sprite Library Guide for more information on loading textures.</P>
+<H2>Multitexturing</H2>
+<P>Basic4GL uses OpenGL v1.1.<BR>Multitexturing is not natively part of the 
+v1.1, but is available through the OpenGL extensions mechanism.</P>
+<P>Basic4GL automatically hooks into this extension and makes the associated 
+functions and constants available to Basic4GL programs. (If the extension is not 
+available, calling the functions will simply do nothing.)</P>
+<H3>ExtensionSupported</H3>
+<P>The Basic4GL function ExtensionSupported is the easiest way to test whether 
+the current hardware supports multitexturing, as for example:</P>
+<BLOCKQUOTE>
+  <P>if not ExtensionSupported ("GL_ARB_multitexture") then<BR><EM>Do something 
+  else...</EM></P></BLOCKQUOTE>
+<P>(You can also check for other extensions, however this version of Basic4GL 
+only supports GL_ARB_multitexture..)</P>
+<P>This is exactly equivalent to calling glGetString (GL_EXTENSIONS) and testing 
+the resulting string for the presence of "GL_ARB_multitexture"</P>
+<H3>MaxTextureUnits</H3>
+<P>MaxTextureUnits() will return the number of available texturing units.</P>
+<BLOCKQUOTE>
+  <P>dim units<BR>units = MaxTextureUnits ()</P></BLOCKQUOTE>
+<P>Note: This is exactly equivalent to:</P>
+<BLOCKQUOTE>
+  <P>dim units<BR>glGetIntegerv (GL_MAX_TEXTURE_UNITS_ARB, units)</P></BLOCKQUOTE>
+<H3>glMultitexCoord2f, glMultitexCoord2d and glActiveTexture</H3>
+<P>These are the actual multitexturing functions that Basic4GL supports.</P>
+<P><EM>See the MultitextureDemo example program for an example of multitexturing 
+in action.</EM></P></BODY></HTML>

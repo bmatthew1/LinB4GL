@@ -1,0 +1,451 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><TITLE>Basic4GL,</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+<META content="MSHTML 6.00.6000.16674" name=GENERATOR></HEAD>
+<BODY bgColor=#ffffff>
+<P><FONT size=5>Basic4GL, Copyright (C) 2005 Tom Mulgrew</FONT></P>
+<P><FONT size=5>Network engine guide</FONT></P>
+<P>2-Apr-2005<BR>Tom Mulgrew</P>
+<H1>The Basic4GL network engine</H1>
+<P>The Basic4GL network engine is designed primarily for writing games.<BR>It 
+allows you to establish a network connection between two running Basic4GL 
+programs and send blocks of data (which we call "messages") back and 
+forth.<BR>Basic4GL will attempt to send these messages as quickly as possible 
+(with some extra logic for reliability and/or ordering if requested).</P>
+<P>Actually that's all it really does.</P>
+<P>Which leaves it up to you to decide what sort of data to send, what it means, 
+and how often you send it. :)<BR>However with a bit of planning it is possible 
+to write some responsive multiplayer lan or internet games without too much 
+fuss.</P>
+<P>The network engine uses UDP/IP packets for communication.<BR>Any network that 
+can do TCP/IP can do UDP/IP (as TCP is built on top of UDP), so your programs 
+can run over the Internet and TCP/IP local networks.</P>
+<P>Basic4GL uses its own protocol for handling connection lifetime and reliable 
+packet delivery which is optimised towards writing responsive networked games. 
+It lets you choose which messages <U>must</U> get through and which ones don't 
+matter if they get lost on the way. You can also choose which messages 
+<U>must</U> arrive in the same order they were sent and which ones don't matter 
+so much.<BR>This upshot of this is that a carefully designed application will 
+have the best chance to be able to continue smoothly if a data packet is lost in 
+transmission, which is important for realtime games. (Unlike TCP/IP which has to 
+stop for a few seconds if it hits an error).<BR>The downside is because the 
+Basic4GL network engine uses its own protocol, it can only talk to other 
+applications using the same protocol. In other words, other Basic4GL programs, 
+so you cannot use Basic4GL to write an FTP client, web browser, etc. (Standard 
+TCP/IP support will likely be added to a later version.)</P>
+<P>The current Basic4GL network engine currently supports:</P>
+<UL>
+  <LI>Automatic connection lifetime handling (using "timeouts" and 
+  "keep-alives") 
+  <LI>Reliable/unreliable messages 
+  <LI>Ordered/unordered messages 
+  <LI>Automatic message fragmentation and reassembly 
+  <LI>Optional "message smoothing" compensates for varying network latency to 
+  ensure messages are received and applied smoothly. </LI></UL>
+<P>Note: The network engine (at time of writing) is still young and lacks some 
+features found in more mature networking engines likeautomatic bandwidth 
+throttling.</P>
+<H2>Reading/writing messages with File I/O functions</H2>
+<P>The bulk of a program's network code usually involves:</P>
+<UL>
+  <LI>Writing some data to a "message", then sending down a network connection. 
+  <LI>Receiving a "message" from a network connection and reading the data 
+  inside it. </LI></UL>
+<P>A network message is a block of data, similar to a small disk file. Infact 
+Basic4GL uses the file I/O functions to read and write the contents of network 
+messages.<BR>Instead of using OpenFileWrite and OpenFileRead, you use 
+SendMessage and ReceiveMessage, but otherwise it's just like accessing a disk 
+file.</P>
+<P>Compare this program to write a simple text file:</P>
+<BLOCKQUOTE><PRE>dim file
+file = OpenFileWrite ("files\test.txt") ' Open a file for output
+WriteString (file, "Some text")         ' Write some text
+CloseFile (file)                        ' Close the file</PRE></BLOCKQUOTE>
+<P>With this program to send a message over a network connection:</P>
+<BLOCKQUOTE><PRE>dim msg
+...
+msg = SendMessage (connection)          ' Create a message to send down connection
+WriteString (msg, "Some text")          ' Write some text
+CloseFile (msg)                         ' Send the message</PRE></BLOCKQUOTE>
+<P>(Note: The above program is incomplete...)</P>
+<P>All of Basic4GL's file I/O functions except "OpenFileRead" and 
+"OpenFileWrite" can be used with Basic4GL network messages.<BR>These functions 
+are described in the File I/O section of the Basic4GL <A 
+href="Programmer's%20Guide.htm">Programmer's Guide</A>.</P>
+<H1>Server-client connections</H1>
+<P>Two connect two computer over a network, you must do the following:</P>
+<UL>
+  <LI>One computer is chosen as the "server". The other is the "client". 
+  <LI>The server listens on a network port number for connection requests. 
+  <LI>The client creates a new connection and connects it to the server's port. 
+  <LI>The server accepts the connection, creating a corresponding connection at 
+  its own end. </LI></UL>
+<P>At this point both the client and the server have a "connection" with which 
+they can send and receive data.<BR>Data sent down the server's connection will 
+be received by the client's connection and vice versa.</P>
+<P>(Note: This can be extended to connect multiple computers together, by having 
+one as the server and having the rest of them as clients that connect to the 
+server. In this case the server will have multiple "connection"s, one for each 
+client.)</P>
+<H1>Servers and server connections</H1>
+<H2>NewServer</H2>
+<P>Format:</P>
+<BLOCKQUOTE>
+  <P>NewServer (<EM>port</EM>)</P></BLOCKQUOTE>
+<P>Where <EM>port </EM>is the port number on which the server "listen"s for 
+connection requests.<BR>NewServer() creates a server and returns a handle to 
+identify the server to other functions (such as AcceptConnection()).</P>
+<P>Example:</P>
+<BLOCKQUOTE><PRE>dim server
+server = NewServer (8000)   ' Create a new server on port 8000
+
+' ... Run the program
+
+DeleteServer (server)       ' Close and delete the server</PRE></BLOCKQUOTE>
+<H2>DeleteServer</H2>
+<P>Format:</P>
+<BLOCKQUOTE>
+  <P>DeleteServer (<EM>server</EM>)</P></BLOCKQUOTE>
+<P>Where <EM>server</EM> is a server handle returned from NewServer().<BR>Shuts 
+down and deletes the server. Any connections accepted by the server will 
+automatically be disconnected and deleted.</P>
+<P>It is good practice to close server objects (and connections) when finished 
+with them.<BR>If not closed explicitly, Basic4GL will automatically close them 
+when the program ends.</P>
+<H2>ConnectionPending</H2>
+<P>Format:</P>
+<BLOCKQUOTE>
+  <P>ConnectionPending (<EM>server</EM>)</P></BLOCKQUOTE>
+<P>Where <EM>server</EM> is a server handle returned from NewServer().</P>
+<P>ConnectionPending() returns true if a client has asked for a connection to 
+the server and is waiting for the server to accept or reject it.<BR>The 
+connection can now be accepted with AcceptConnection() or rejected with 
+RejectConnection().</P>
+<H2>AcceptConnection</H2>
+<P>Format:</P>
+<BLOCKQUOTE>
+  <P>AcceptConnection (<EM>server</EM>)</P></BLOCKQUOTE>
+<P>Where <EM>server</EM> is a server handle returned from NewServer().</P>
+<P>AcceptConnection() accepts a pending connection request, creates a 
+corresponding connection object and returns a handle for it.<BR>If no connection 
+is pending, AcceptConnection() does nothing and returns 0.</P>
+<P>Example:</P>
+<BLOCKQUOTE><PRE>const port = 8000
+dim server, connection
+
+' Create server
+server = NewServer (port)
+printr "Server created. Waiting for connections"
+
+' Wait for incoming connections
+while true
+    if ConnectionPending (server) then
+        printr "Connection accepted"
+    
+        ' Accept connection
+        connection = AcceptConnection (server)
+        
+        ' ... Do something here
+        Sleep (1000)
+        
+        ' Close connection now that we're finished
+        DeleteConnection (connection)
+    endif
+wend</PRE></BLOCKQUOTE>
+<H2>RejectConnection</H2>
+<P>Format:</P>
+<BLOCKQUOTE>
+  <P>RejectConnection (<EM>server</EM>)</P></BLOCKQUOTE>
+<P>Where <EM>server</EM> is a server handle returned from NewServer().</P>
+<P>Rejects an incoming connection request.<BR>This returns a notification to the 
+connecting client that the connection has <STRONG>not</STRONG> been accepted, 
+and discards the request.</P>
+<H1>Client connections</H1>
+<H2>NewConnection</H2>
+<P>Format:</P>
+<BLOCKQUOTE>
+  <P>NewConnection (<EM>address</EM>, <EM>port</EM>)</P></BLOCKQUOTE>
+<P>Creates a new connection and attempts to connect to a server at the specified 
+address and port.<BR><EM>address</EM> is a text string specifying the network 
+name to connect to. It can either be a DNS address (e.g. "someserver.com"), a 
+numeric IP address (e.g. "192.168.0.1") or "localhost" (meaning connect to the 
+same computer).<BR><EM>port</EM> is the port number. It must be the same one as 
+the server is listening on, otherwise it wont find the server.</P>
+<P>NewConnection() returns a handle identifying the connection that can be 
+passed to other functions (such as SendMessage()).</P>
+<H2>DeleteConnection</H2>
+<P>Format:</P>
+<BLOCKQUOTE>
+  <P>DeleteConnection (<EM>connection</EM>)</P></BLOCKQUOTE>
+<P>Where <EM>connection</EM> is a connection handle returned by NewConnection() 
+or AcceptConnection().</P>
+<P>Deletes a network connection.<BR>If the connection is active, it will be 
+closed, and a notification sent to the corresponding connection at the other end 
+to inform it of the close.</P>
+<P>Basic4GL also automatically closes and deletes any outstanding network 
+connections when the program finishes.</P>
+<H1>Connection state</H1>
+<H2>ConnectionConnected</H2>
+<P>Format:</P>
+<BLOCKQUOTE>
+  <P>ConnectionConnected (<EM>connection</EM>)</P></BLOCKQUOTE>
+<P>Where <EM>connection</EM> is a connection handle returned by NewConnection() 
+or AcceptConnection().</P>
+<P>ConnectionConnected() returns true if the connection is still connected, or 
+false if the connection has been disconnected.<BR>Connections are considered 
+"connected" when they are created, and remain that way until either:</P>
+<UL>
+  <LI>The connection is closed at the other end (by DeleteConnection()), or 
+  <LI>The connection times out due to lack of network activity.<BR>(Note: This 
+  does <EM>not</EM> mean that you have to keep sending network messages to 
+  prevent a connection timing out. The network engine automatically sends "keep 
+  alive" notifications if necessary to inform the other side that the connection 
+  is still alive.) </LI></UL>
+<H2>ConnectionHandshaking</H2>
+<P>Format:</P>
+<BLOCKQUOTE>
+  <P>ConnectionHandshaking(<EM>connection</EM>)</P></BLOCKQUOTE>
+<P>Where <EM>connection</EM> is a connection handle returned by NewConnection() 
+or AcceptConnection().</P>
+<P>Returns true if the connection is in the hand-shaking state.</P>
+<P>Connections created by NewConnection() are considered to be "hand-shaking" 
+until the server accepts the connection (and the confirmation notification is 
+received).<BR>Once the connection is established, it leaves the hand-shaking 
+state (ConnectionHandshaking() will then return false), and the connection is 
+ready to send and receive messages.</P>
+<P>Note: Server connections created with AcceptConnection() do not have a 
+hand-shaking phase. For these ConnectionHandshaking() will always return false. 
+The connection is fully established as soon as it has been accepted.</P>
+<H2>ConnectionAddress</H2>
+<P>Format:</P>
+<BLOCKQUOTE dir=ltr style="MARGIN-RIGHT: 0px">
+  <P>ConnectionAddress(<EM>connection</EM>)</P></BLOCKQUOTE>
+<P dir=ltr>Where <EM>connection</EM> is a connection handle returned by 
+NewConnection() or AcceptConnection().</P>
+<P dir=ltr>Returns the IP address of the computer at the other end of the 
+network connection, in numeric format (e.g. "192.168.0.1").</P>
+<H1>Sending messages</H1>
+<P>Data is passed through connections as "messages", variable length blocks of 
+data which are transmitted and received as a single item.</P>
+<H2>SendMessage</H2>
+<P>Format:</P>
+<BLOCKQUOTE>
+  <P>SendMessage (<EM>connection</EM>, <EM>channel</EM>, <EM>reliable</EM>, 
+  <EM>smoothed</EM>)</P></BLOCKQUOTE>
+<P>Where <EM>connection</EM> is a connection handle returned by NewConnection() 
+or AcceptConnection().</P>
+<P>SendMessage() creates a message ready to be sent down <EM>connection</EM>, 
+and returns a handle representing the message.<BR>You can then pass this handle 
+to the Write...() file I/O functions (WriteByte(), WriteString(), etc) to write 
+data to the message, just as you would write data to a file. <STRONG>Refer to 
+the file I/O functions in the Basic4GL </STRONG><A 
+href="Programmer's%20guide.htm"><STRONG>Programmer's Guide</STRONG></A><STRONG> 
+for more information.</STRONG></P>
+<P>Once the message is ready, call CloseFile() to close the message and send 
+it.</P>
+<P>SendMessage() has 3 options which affect message delivery:</P>
+<P>1. Channel</P>
+<P>Channel is a "channel number" and affects the order in which messages are 
+received.<BR>Depending on network conditions messages can arrive at the 
+receiving end in a different order than which they were sent. Also, in some 
+cases a message (or part of a message) may be lost in transmission and have to 
+be resent, which delays the message long enough for other messages to get in 
+infront of it.<BR>The Basic4GL network engine supports ordering of messages 
+through "channels". Every connection has 32 channels (numbered 0 through 31 
+inclusive). Messages sent within a single <STRONG>channel</STRONG><EM><STRONG> 
+</STRONG></EM>are guaranteed to be received in the same order as they were sent, 
+with the exception of channel # 0 which is the unordered channel.<BR>Two 
+messages sent down different channels are <EM>not </EM>guaranteed to be received 
+in the same order.</P>
+<P>There are multiple channels to allow you to specify on which messages the 
+ordering is important. A good choice of channels can affect network performance, 
+especially over unreliable networks (such as an internet connection). If an 
+ordered message is delayed, the whole channel will stall until the message is 
+received and slotted into its correct order. However other channels will still 
+keep receive messages. So if a game was using on ordered channel for chat 
+messages, and a <EM>different</EM> channel for position updates, the engine can 
+keep receiving position updates even if a chat message is lost and must be 
+re-transmitted.</P>
+<P>2. Reliable </P>
+<P>Reliable is true if the message must be delivered.<BR>Depending on network 
+conditions, some messages may be lost in transmission. The reliable flag 
+specifies whether this is acceptable for this message (reliable = false) or 
+whether the message <STRONG>must</STRONG> get through (in which case the network 
+engine will keep resending the packet until delivery is confirmed).</P>
+<P>3. Smoothed</P>
+<P>The amount of time a message takes to reach its destination is called the 
+network latency (or "lag"). This can vary greatly depending on the network 
+connection. Over a local network the latency can be just a few hundredths of a 
+second. Over a dial-up internet connection to the otherside of the world it can 
+be as much as a second.<BR>Depending on network conditions the latency can 
+actually from message to message, meaning that messages (like position updates) 
+that are sent out at nice regular spaced out intervals may arrive in at the 
+other end in irregular clumps.</P>
+<P>The Basic4GL network engine has a "smoothing" algorithm which compensates 
+this by measuring the time it takes to deliver packets, and delaying early 
+packets until they are considered "due".<BR>So if un"smoothed" messages have a 
+network latency of 100-200ms, applying smoothing might cause the majority of 
+messages to have a latency of 180ms (with a few taking 180-200ms).</P>
+<P>Be aware that this algorithm is effectively adding "lag" to faster messages, 
+and should therefore be used with caution.</P>
+<P><FONT color=#ff0000>[Example here]</FONT></P>
+<H1>Receiving messages</H1>
+<H2>MessagePending</H2>
+<P>Format:</P>
+<BLOCKQUOTE>
+  <P>MessagePending (<EM>connection</EM>)</P></BLOCKQUOTE>
+<P>Where <EM>connection</EM> is a connection handle returned by NewConnection() 
+or AcceptConnection().</P>
+<P>MessagePending() returns true if a message has been received and can be 
+fetched with ReceiveMessage().</P>
+<H2>MessageChannel</H2>
+<P>Format:</P>
+<BLOCKQUOTE>
+  <P>MessageChannel (<EM>connection</EM>)</P></BLOCKQUOTE>
+<P>Where <EM>connection</EM> is a connection handle returned by NewConnection() 
+or AcceptConnection().</P>
+<P>MessageChannel() returns the channel number of the pending message. (See 
+SendMessage() for more information).</P>
+<H2>MessageReliable</H2>
+<P>Format:</P>
+<BLOCKQUOTE>
+  <P>MessageReliable (<EM>connection</EM>)</P></BLOCKQUOTE>
+<P>Where <EM>connection</EM> is a connection handle returned by NewConnection() 
+or AcceptConnection().</P>
+<P>MessageReliable() returns whether the pending message was sent as a reliable 
+message (MessageReliable() = true) or as an unreliable message. (See 
+SendMessage() for more information).</P>
+<H2>MessageSmoothed</H2>
+<P>Format:</P>
+<BLOCKQUOTE>
+  <P>MessageSmoothed (<EM>connection</EM>)</P></BLOCKQUOTE>
+<P>Where <EM>connection</EM> is a connection handle returned by NewConnection() 
+or AcceptConnection().</P>
+<P>MessageSmoothed() returns whether the pending message was sent as a smoothed 
+message (MessageSmoothed() = true) or not. (See SendMessage() for more 
+information).</P>
+<H2>ReceiveMessage</H2>
+<P>Format:</P>
+<BLOCKQUOTE>
+  <P>ReceiveMessage (<EM>connection</EM>)</P></BLOCKQUOTE>
+<P>Where <EM>connection</EM> is a connection handle returned by NewConnection() 
+or AcceptConnection().</P>
+<P>ReceivedMessage() fetches the current pending message from the connection and 
+returns a handle representing the message.<BR>You can then pass this handle to 
+the Read...() file I/O functions (ReadByte(), ReadChar(), etc) to read data from 
+the message, just as you would read data from a file. The Seek() and EndOfFile() 
+functions may also be used.<STRONG> Refer to the file I/O functions in the 
+Basic4GL </STRONG><A href="Programmer's%20guide.htm"><STRONG>Programmer's 
+Guide</STRONG></A><STRONG> for more information.</STRONG></P>
+<P>Once you have finished with the message, you should discard it with 
+CloseFile(), in order to free up resources.</P>
+<P><FONT color=#ff0000>[Example here]</FONT></P>
+<H1>Connection and handshaking flags</H1>
+<P>There are two flags which indicate the current connection state of a 
+connection:</P>
+<OL>
+  <LI>Connected (see function: ConnectionConnected()) 
+  <LI>Handshaking (see function: ConnectionHandshaking()) </LI></OL>
+<H2>Client connections</H2>
+<P>When a client connection is created with NewConnection(), <EM>connected</EM> 
+and <EM>handshaking</EM> are both set.<BR>If the connection succeeds, 
+<EM>connected</EM> remains set, and <EM>handshaking</EM> is cleared.<BR>If the 
+connection fails (either rejected by the server, or times out), 
+<EM>connected</EM> is cleared. (<EM>handshaking</EM> may remain set 
+though...)</P>
+<P>Thus the code to establish a client connection might look something like 
+this:</P>
+<BLOCKQUOTE><PRE>dim connection, address$, port
+
+' Get connection details
+print "Address?:": address$ = input$ ()
+print "Port?:": port = val (input$ ())
+
+' Attempt to connect to server
+printr "Connecting..."
+connection = NewConnection (address$, port)
+while ConnectionConnected (connection) and ConnectionHandshaking (connection): wend
+
+' Check if succeeded
+if ConnectionConnected (connection) then
+    printr "Connection succeeded"
+    ' Do something with connection
+    ' ...
+else
+    printr "Connection failed"
+endif
+
+' Close connection
+DeleteConnection (connection)</PRE></BLOCKQUOTE>
+<P>If you attempt to use a connection while in the handshaking stage the network 
+engine will do it's best to accomodate this. Specifically:</P>
+<UL>
+  <LI>Outgoing messages will not be sent immediately. Instead they will be 
+  placed in a queue until the connection is established, and then sent. 
+  <LI>No messages will be received until the connection is established. </LI></UL>
+<H2>Server connections</H2>
+<P>When a server connection is created with AcceptConnection(), <EM>connected 
+</EM>is set and <EM>handshaking</EM> is cleared.<BR>The connection is considered 
+established and can be used immediately.</P>
+<H1>Connection settings</H1>
+<P>Network connections have a number of parameters which affect how they behave 
+and perform in different network conditions. These affect timeouts, automatic 
+resends, timing and also have an effect on the amount of bandwidth used. Often 
+you will not need to configure these parameters as they have defaults should 
+work in a number of different network conditions. However they are available 
+should you need them.</P>
+<P>Be careful when adjusting connection settings, as they can cause the network 
+connection to fail if setup incorrectly.</P>
+<P>Connection settings can be changed after a connection is created (with 
+NewConnection or AcceptConnection).</P>
+<H2>SetConnectionTimeout</H2>
+<P>Format:</P>
+<BLOCKQUOTE dir=ltr style="MARGIN-RIGHT: 0px">
+  <P>SetConnectionTimeout(<EM>milliseconds</EM>)</P></BLOCKQUOTE>
+<P dir=ltr>Where <EM>milliseconds</EM>is the number of milliseconds after which 
+a connection times out and disconnects if no response is received from the other 
+side.<BR>The default is 60000 (60 seconds).</P>
+<H2>SetConnectionHandshakeTimeout</H2>
+<P>Format:</P>
+<BLOCKQUOTE dir=ltr style="MARGIN-RIGHT: 0px">
+  <P>SetConnectionHandshakeTimeout(<EM>milliseconds</EM>)</P></BLOCKQUOTE>
+<P dir=ltr>Where <EM>milliseconds</EM>is the number of milliseconds after which 
+a connection attempt will timeout if no reply is received from the 
+server.<BR>The default is 10000 (10 seconds).</P>
+<H2 dir=ltr>SetConnectionKeepAlive</H2>
+<P dir=ltr>Format:</P>
+<BLOCKQUOTE dir=ltr style="MARGIN-RIGHT: 0px">
+  <P dir=ltr>SetConnectionKeepAlive(<EM>milliseconds</EM>)</P></BLOCKQUOTE>
+<P dir=ltr>If the connection has not sent anything for&nbsp;this amount of time 
+it will automatically send a "keep alive" message to let the other end know that 
+it is still connected. This prevents the connection from timing out at the other 
+end.</P>
+<H2 dir=ltr>SetConnectionReliableResend</H2>
+<P dir=ltr>Format:</P>
+<BLOCKQUOTE dir=ltr style="MARGIN-RIGHT: 0px">
+  <P dir=ltr>SetConnectionReliableResend(<EM>milliseconds</EM>)</P></BLOCKQUOTE>
+<P dir=ltr>This affects sending of reliable messages. When a reliable messages 
+is sent, the connection will continually send the message until it receives 
+confirmation from the other end that the message has been delivered. This 
+setting controls how long the connection waits before resending the message. The 
+default is 200 (0.2 seconds).</P>
+<P dir=ltr>The lower this value is, the less delay there will be when packet 
+loss occurs. However setting the value lower than the ping time will use up 
+extra bandwidth, as a reliable message will be sent twice (or more) before the 
+confirmation notification is received.</P>
+<H2 dir=ltr>SetConnectionDuplicates</H2>
+<P dir=ltr>Format:</P>
+<BLOCKQUOTE dir=ltr style="MARGIN-RIGHT: 0px">
+  <P dir=ltr>SetConnectionDuplicates(<EM>count</EM>)</P></BLOCKQUOTE>
+<P dir=ltr>Specifies the number of times each message is duplicated when sent. 
+The default is 1.<BR>Setting this number higher decreases the likelyhood of 
+packet loss at the cost of extra bandwidth.</P>
+<H2>SetConnectionSmoothingPercentage</H2>
+<P>Format:</P>
+<BLOCKQUOTE dir=ltr style="MARGIN-RIGHT: 0px">
+  <P>SetConnectionSmoothingPercentage(<EM>percentage</EM>)</P></BLOCKQUOTE>
+<P dir=ltr>The "smoothing" timing algorithm attempts to add artificial lag such 
+that this percentage of packets arrive on time.&nbsp;The defaut is 80 
+(percent).<BR>Setting this number lower will decrease artificial lag but 
+decreases "smoothness".<BR>Setting this number higher will increase artificial 
+lag and increase "smoothness".</P></BODY></HTML>

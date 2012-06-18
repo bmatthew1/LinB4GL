@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Debug" />
+	<File name="Compiler\PreprocessorInterfaces.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="251" topLine="0" />
+	</File>
+	<File name="Compiler\PreprocessorInterfaces.h" open="0" top="0" tabpos="0">
+		<Cursor position="483" topLine="0" />
+	</File>
+	<File name="Compiler\TomComp.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="161456" topLine="4765" />
+	</File>
+	<File name="Compiler\TomComp.h" open="0" top="0" tabpos="0">
+		<Cursor position="20959" topLine="438" />
+	</File>
+	<File name="Compiler\compFunction.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="570" topLine="0" />
+	</File>
+	<File name="Compiler\compFunction.h" open="0" top="0" tabpos="0">
+		<Cursor position="368" topLine="0" />
+	</File>
+	<File name="Compiler\compParse.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="9422" topLine="237" />
+	</File>
+	<File name="Compiler\compParse.h" open="0" top="0" tabpos="0">
+		<Cursor position="3258" topLine="64" />
+	</File>
+	<File name="Compiler\compParseTypes.h" open="0" top="0" tabpos="0">
+		<Cursor position="152" topLine="0" />
+	</File>
+	<File name="Compiler\compPreprocessor.cpp" open="1" top="0" tabpos="2">
+		<Cursor position="31" topLine="0" />
+	</File>
+	<File name="Compiler\compPreprocessor.h" open="0" top="0" tabpos="0">
+		<Cursor position="260" topLine="0" />
+	</File>
+	<File name="DLL SDK\PluginDLLMain.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="525" topLine="4" />
+	</File>
+	<File name="DLLInterface\PluginDLL.cpp" open="0" top="0" tabpos="8">
+		<Cursor position="27696" topLine="918" />
+	</File>
+	<File name="DLLInterface\PluginDLL.h" open="0" top="0" tabpos="0">
+		<Cursor position="275" topLine="0" />
+	</File>
+	<File name="DLLInterface\PluginDataStructures.cpp" open="1" top="0" tabpos="4">
+		<Cursor position="1053" topLine="0" />
+	</File>
+	<File name="DLLInterface\PluginDataStructures.h" open="1" top="0" tabpos="3">
+		<Cursor position="372" topLine="0" />
+	</File>
+	<File name="DLLInterface\TomVMDLLAdapter.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="20063" topLine="690" />
+	</File>
+	<File name="DLLInterface\TomVMDLLAdapter.h" open="1" top="0" tabpos="9">
+		<Cursor position="387" topLine="0" />
+	</File>
+	<File name="FunctionLibs\GLBasicLib_gl.cpp" open="0" top="0" tabpos="2">
+		<Cursor position="73899" topLine="1434" />
+	</File>
+	<File name="FunctionLibs\GLBasicLib_gl.h" open="0" top="0" tabpos="0">
+		<Cursor position="324" topLine="0" />
+	</File>
+	<File name="FunctionLibs\JoshSDLLib.cpp" open="1" top="0" tabpos="7">
+		<Cursor position="269" topLine="51" />
+	</File>
+	<File name="FunctionLibs\JoshSDLLib.h" open="1" top="0" tabpos="6">
+		<Cursor position="345" topLine="1" />
+	</File>
+	<File name="FunctionLibs\TomFileIOBasicLib.cpp" open="1" top="1" tabpos="10">
+		<Cursor position="275" topLine="6" />
+	</File>
+	<File name="FunctionLibs\TomStdBasicLib.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="277" topLine="0" />
+	</File>
+	<File name="FunctionLibs\TomTrigBasicLib.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="23080" topLine="310" />
+	</File>
+	<File name="Minib4gl.cpp" open="0" top="0" tabpos="1">
+		<Cursor position="2405" topLine="51" />
+	</File>
+	<File name="Routines\EmbeddedFiles.cpp" open="0" top="0" tabpos="5">
+		<Cursor position="251" topLine="279" />
+	</File>
+	<File name="Routines\EmbeddedFiles.h" open="0" top="0" tabpos="6">
+		<Cursor position="469" topLine="0" />
+	</File>
+	<File name="Routines\FilenameRoutines.cpp" open="0" top="0" tabpos="7">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="Routines\LoadImage.cpp" open="0" top="0" tabpos="3">
+		<Cursor position="1642" topLine="60" />
+	</File>
+	<File name="VM\DebuggerInterfaces.cpp" open="0" top="0" tabpos="6">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="VM\TomVM.cpp" open="1" top="0" tabpos="8">
+		<Cursor position="228" topLine="75" />
+	</File>
+	<File name="VM\TomVM.h" open="1" top="0" tabpos="1">
+		<Cursor position="4167" topLine="107" />
+	</File>
+	<File name="VM\streaming.h" open="0" top="0" tabpos="0">
+		<Cursor position="1574" topLine="0" />
+	</File>
+	<File name="VM\vmDebugger.h" open="0" top="0" tabpos="0">
+		<Cursor position="334" topLine="0" />
+	</File>
+	<File name="VM\vmTypes.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="7859" topLine="214" />
+	</File>
+	<File name="VM\vmTypes.h" open="0" top="0" tabpos="0">
+		<Cursor position="1109" topLine="18" />
+	</File>
+</CodeBlocks_layout_file>
